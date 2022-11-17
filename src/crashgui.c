@@ -19,7 +19,7 @@ static void fork_main(const char *error)
     return;
 #else
 
-    struct window *w     = create_window("A Fatal Eerror Occured:", error);
+    struct window *w     = create_window("A Fatal Error Occured:", error);
     char *fake_exec_name = "libcrashgui";
     run_window(w, 1, &fake_exec_name);
     destroy_window(w);
