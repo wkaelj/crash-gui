@@ -5,7 +5,10 @@ BIN = build
 CFLAGS = -std=gnu2x -O3
 CFLAGS += -Wall -Wextra -fPIC
 CFLAGS += `pkg-config gtk4 --cflags`
-LDFLAGS = `pkg-config gtk4 --libs` -g
+CFLAGS += `pkg-config libadwaita-1 --cflags`
+LDFLAGS += -g -lm
+LDFLAGS = `pkg-config gtk4 --libs`
+LDFLAGS += `pkg-config libadwaita-1 --libs`
 SRC = src/crashgui.c
 OBJ = $(SRC:%.c=$(BIN)/%.o)
 
@@ -29,6 +32,7 @@ dirs:
 
 test: test.c dirs static
 	cc $< -o $@ -std=gnu2x -Wall -Wextra -L./ -lcrash-gui-static $(LDFLAGS)
+	./test
 
 clean:
 	rm -f $(OBJ) libcrash-gui-static.a libcrash-gui.so
