@@ -1,11 +1,12 @@
 #include "window.h"
 
-#include <adwaita.h>
 #include <assert.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
-G_BEGIN_DECLS
+#include <dlfcn.h>
+
+typedef void *Application;
 
 void gtk_widget_set_margin(GtkWidget *widget, int margin);
 
@@ -13,10 +14,12 @@ struct window
 {
     const char *title;
     const char *error;
-    AdwApplication *app;
+    Application *app;
     GtkWidget *window;
     GtkWidget *close_button;
     GtkWidget *error_label;
+
+    void *libadwaita;
 };
 
 static void
@@ -88,14 +91,30 @@ struct window *create_window(const char *t, const char *e)
 {
     struct window *w = malloc(sizeof(struct window));
 
-    AdwApplication *app = NULL;
+    // check if the app needs to use adwaita
+    void *libadwaita = dlopen("libadwaita-1.so", RTLD_LAZY);
 
-    app = adw_application_new("crash.gui.window", G_APPLICATION_DEFAULT_FLAGS);
+    Application *app   = NULL;
+    const char *app_id = "crash.gui.window";
+
+    // if libadwaita is present, use it. Otherwise use gtk by itself
+    if (libadwaita)
+    {
+        Application (*adw_application_new)(const char *, int) =
+            dlsym(libadwaita, "adw_application_new");
+        app = adw_application_new(app_id, G_APPLICATION_DEFAULT_FLAGS);
+    }
+    else
+    {
+        app = (Application)gtk_application_new(
+            app_id, G_APPLICATION_DEFAULT_FLAGS);
+    }
 
     *w = (struct window){
-        .app   = app,
-        .error = e,
-        .title = t,
+        .app        = app,
+        .error      = e,
+        .title      = t,
+        .libadwaita = libadwaita,
     };
 
     g_signal_connect(w->app, "activate", G_CALLBACK(activate), w);
@@ -112,6 +131,7 @@ int run_window(struct window *w, int argc, char **argv)
 void destroy_window(struct window *w)
 {
     g_object_unref(w->app);
+    dlclose(w->libadwaita);
     free(w);
 }
 
