@@ -23,6 +23,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARIES})
 
 # Add other flags to the compiler
 # target_compile_definitions(${PROJECT_NAME} PRIVATE ${GTK4_CFLAGS_OTHER})
-target_include_directories(${PROJECT_NAME} PRIVATE ${GTK4_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} 
+  PUBLIC ${PROJECT_SOURCE_DIR}/src 
+  PRIVATE ${GTK4_INCLUDE_DIRS})
 target_link_directories(${PROJECT_NAME} PRIVATE ${GTK4_LIBRARY_DIRS})
 
