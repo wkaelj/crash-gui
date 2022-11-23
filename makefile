@@ -40,10 +40,10 @@ test: test.c dirs static
 clean:
 	rm -f $(OBJ) $(LIBCRASHGUI_STATIC) $(LIBCRASHGUI_SHARED)
 
-shared: dirs $(OBJ)
+shared: $(OBJ)
 	$(CC) -shared $^ $(LDFLAGS) $(CFLAGS) -o $(LIBCRASHGUI_SHARED)
 
-static: dirs $(OBJ)
+static: $(OBJ)
 	ar rcs $(LIBCRASHGUI_STATIC) $^
 	
 $(BIN)/%.o: %.c

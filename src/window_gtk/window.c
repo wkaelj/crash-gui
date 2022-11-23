@@ -55,6 +55,8 @@ static void activate([[maybe_unused]] GtkApplication *app, gpointer usr)
 
     gtk_window_set_icon_name(GTK_WINDOW(w->window), "dialog-error");
 
+    // create stack trace ui
+
     // create exit button
     w->close_button = gtk_button_new_with_label("Okay");
     gtk_widget_set_size_request(w->close_button, window_size[0] / 2, 0);
